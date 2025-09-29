@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Final Orders Queue</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  /* --- GLOBAL --- */
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #6a11cb, #2575fc);
+    min-height: 100vh;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+  }
+
+  /* --- HEADER --- */
+  header {
+    text-align: center;
+    margin-bottom: 25px;
+  }
+  header h1 {
+    font-size: clamp(2rem, 6vw, 3rem);
+    font-weight: 700;
+    background: linear-gradient(90deg, #ffdf5d, #ff7f50);
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .queue-count {
+    margin-top: 10px;
+    background: rgba(255,255,255,0.15);
+    padding: 10px 20px;
+    border-radius: 50px;
+    font-weight: 600;
+    backdrop-filter: blur(8px);
+  }
+
+  /* --- CLEAR BUTTON --- */
+  #clearBtn {
+    margin: 15px 0;
+    padding: 12px 25px;
+    font-weight: 600;
+    font-size: 1rem;
+    border: none;
+    border-radius: 50px;
+    background: linear-gradient(135deg,#ff4b2b,#ff416c);
+    cursor: pointer;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  #clearBtn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+  }
+
+  /* --- TOTAL AMOUNT --- */
+  #totalAmount {
+    font-weight: 700;
+    font-size: clamp(1.2rem,4vw,1.5rem);
+    margin: 20px 0;
+    padding: 12px 25px;
+    border-radius: 50px;
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(8px);
+    text-align: center;
+  }
+
+  /* --- ORDERS GRID --- */
+  .orders-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(280px,1fr));
+    gap: 20px;
+    width: 100%;
+    max-width: 1200px;
+  }
+
+  .order-card {
+    background: rgba(255,255,255,0.08);
+    padding: 20px;
+    border-radius: 20px;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .order-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+    background: rgba(255,255,255,0.12);
+  }
+
+  .order-card h3 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #ffdf5d;
+    margin-bottom: 8px;
+  }
+  .order-card p {
+    font-size: 1rem;
+    color: #fff;
+    opacity: 0.9;
+    margin: 5px 0;
+  }
+
+  /* --- QUEUE BADGE --- */
+  .queue-badge {
+    display: inline-block;
+    background: linear-gradient(135deg,#ffdf5d,#ff7f50);
+    color: #000;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 12px;
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+  }
+
+  /* --- RESPONSIVE --- */
+  @media(max-width:480px){
+    #clearBtn{width:100%;padding:14px 0;}
+    .order-card{padding:15px;}
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>Final Orders Queue</h1>
+  <div class="queue-count" id="queueCount">Queue Count: 0</div>
+</header>
+
+<button id="clearBtn">Clear All Orders</button>
+
+<div id="totalAmount">Total Amount: ₹0</div>
+<div class="orders-container" id="ordersContainer"></div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getDatabase, ref, onValue, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCeLj-v5Coav6llAeDP30bKn4-k-OzpcQM",
+    authDomain: "loginpage-536d9.firebaseapp.com",
+    projectId: "loginpage-536d9",
+    storageBucket: "loginpage-536d9.appspot.com",
+    messagingSenderId: "445956902411",
+    appId: "1:445956902411:web:b4d31d65a212f3fc46c10e",
+    measurementId: "G-2QELSP6EJ0",
+    databaseURL:"https://loginpage-536d9-default-rtdb.firebaseio.com/"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  const ordersContainer = document.getElementById("ordersContainer");
+  const queueCount = document.getElementById("queueCount");
+  const clearBtn = document.getElementById("clearBtn");
+
+  const finalRef = ref(db, "finalOrders");
+
+  onValue(finalRef,(snapshot)=>{
+    ordersContainer.innerHTML="";
+    let count=0;
+    let totalAmount=0;
+
+    if(snapshot.exists()){
+      snapshot.forEach((child)=>{
+        const order = child.val();
+        count++;
+        totalAmount += Number(order.cost) || 0;
+
+        const card = document.createElement("div");
+        card.classList.add("order-card");
+        card.innerHTML = `
+          <div class="queue-badge">Queue #${order.queue || child.key}</div>
+          <h3>${order.food || "N/A"}</h3>
+          <p><strong>Quantity:</strong> ${order.quantity || "N/A"}</p>
+          <p><strong>Cost:</strong> ₹${order.cost || "N/A"}</p>
+          
+        `;
+        ordersContainer.appendChild(card);
+      });
+    }
+
+    queueCount.innerText = "Queue Count: " + count;
+    document.getElementById("totalAmount").innerText="Total Amount: ₹"+totalAmount;
+  });
+
+  clearBtn.onclick=()=>{
+    const id=prompt("Enter Admin ID:");
+    const password=prompt("Enter Password:");
+
+    if(id==="RAGHU" && password==="clear"){
+      if(confirm("Are you sure you want to clear all orders?")){
+        remove(ref(db,"finalOrders"))
+          .then(()=>alert("All orders cleared successfully!"))
+          .catch(err=>alert("Error clearing orders: "+err));
+      }
+    }else{alert("Invalid ID or Password!");}
+  };
+</script>
+</body>
+</html>

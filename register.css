@@ -1,0 +1,101 @@
+/* Background with offline image */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Poppins', sans-serif;
+  height: 100vh;
+  background: url("hi.jpg") no-repeat center center fixed;
+  background-size: cover;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Glassmorphism Registration Box */
+.register-container {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 15px;
+  padding: 40px 30px;
+  width: 380px;
+  text-align: center;
+  color: #6a11cb;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.reg{
+    text-align: center;
+    font-size: 16px;
+    font-weight: lighter;
+    color: black;
+}
+/* Title */
+.register-container h2 {
+  margin-bottom: 20px;
+  font-size: 28px;
+  font-weight: 600;
+}
+
+/* Input Groups */
+.input-group {
+  text-align: left;
+  margin-bottom: 18px;
+}
+
+.input-group label {
+  display: block;
+  font-size: 14px;
+  margin-bottom: 6px;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-bottom: 2px solid #ddd;
+  background: transparent;
+  color: black;
+  font-size: 14px;
+  outline: none;
+  transition: 0.3s;
+}
+
+/* Input focus effect */
+.input-group input:focus {
+  border-bottom: 2px solid #6a11cb;
+}
+
+/* Button */
+.btn {
+  background: #fff;
+  color: #333;
+  border: none;
+  padding: 10px;
+  width: 100%;
+  border-radius: 25px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.btn:hover {
+  background: #6a11cb;
+  color: #fff;
+}
+
+/* Login text */
+.login-text {
+  margin-top: 15px;
+  font-size: 14px;
+}
+
+.login-text a {
+  color: black;
+  font-weight: lighter;
+  text-decoration: none;
+}
+
+.login-text a:hover {
+  text-decoration: underline;
+}

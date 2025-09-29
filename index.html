@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Canteen Home</title>
+<style>
+body {
+  font-family: 'Segoe UI', Arial;
+  margin:0;
+  background: linear-gradient(120deg,#f4f7f9,#e0f7fa);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
+
+.container {
+  display:flex;
+  gap:40px;
+  flex-wrap:wrap;
+  justify-content:center;
+}
+
+.card {
+  background:white;
+  width:200px;
+  padding:30px 20px;
+  border-radius:15px;
+  box-shadow:0 10px 20px rgba(0,0,0,0.1);
+  text-align:center;
+  cursor:pointer;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card:hover {
+  transform: translateY(-10px);
+  box-shadow:0 15px 25px rgba(0,0,0,0.2);
+}
+
+.card img {
+  width:100px;
+  margin-bottom:15px;
+}
+
+.card h3 {
+  margin:10px 0 5px;
+  color:#2c3e50;
+}
+
+.card p {
+  color:#555;
+  font-size:14px;
+}
+
+</style>
+</head>
+<body>
+
+<div class="container">
+  <!-- Student Card -->
+  <div class="card" onclick="location.href='register.html'">
+    <img src="Student-Fonts-39551697-1-1.png" alt="Student">
+    <h3>Student</h3>
+    <p>Place orders and view menu</p>
+  </div>
+
+  <!-- Canteen Staff Card -->
+  <div class="card" onclick="location.href='staffloginpage.html'">
+    <img src="images.png" alt="Canteen Staff">
+    <h3>Canteen Staff</h3>
+    <p>Manage orders and view payment proofs</p>
+  </div>
+</div>
+
+</body>
+</html>

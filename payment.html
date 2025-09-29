@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Payment - Smart Canteen</title>
+<style>
+  body {font-family: Arial; background:#f4f7f9; padding:20px; text-align:center;}
+  .card {background:white; padding:20px; border-radius:10px; box-shadow:0px 4px 10px rgba(0,0,0,0.1); display:inline-block;}
+  #paymentImage {margin-top:20px; max-width:250px;}
+</style>
+</head>
+<body>
+
+<div class="card">
+  <h2>Payment Page</h2>
+  <p id="orderDetails">Loading order...</p>
+  <p>Total Amount: ₹<span id="totalAmount">0</span></p>
+  <img id="paymentImage" src="qr.jpg" alt="Payment QR or Image">
+  <p>Scan the above QR or follow instructions to pay.</p>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-app.js";
+  import { getDatabase, ref, set, push } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCeLj-v5Coav6llAeDP30bKn4-k-OzpcQM",
+    authDomain: "loginpage-536d9.firebaseapp.com",
+    projectId: "loginpage-536d9",
+    storageBucket: "loginpage-536d9.appspot.com",
+    messagingSenderId: "445956902411",
+    appId: "1:445956902411:web:b4d31d65a212f3fc46c10e",
+    databaseURL:"https://loginpage-536d9-default-rtdb.firebaseio.com/"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const database = getDatabase(app);
+
+  const prices = {
+    "Veg-noodles": 50,
+    "Chicken-noodles": 70,
+    "Veg-fried-rice": 60,
+    "Chicken-fried-rice": 75
+  };
+
+  const params = new URLSearchParams(window.location.search);
+  const food = params.get('food');
+  const qty = parseInt(params.get('qty'));
+  const email = params.get('email'); // optional
+
+  if (!food || !qty || isNaN(qty) || !prices[food]) {
+    document.getElementById('orderDetails').innerText = "Invalid order!";
+    document.getElementById('totalAmount').innerText = "0";
+    alert("Invalid order! Please provide ?food=FoodName&qty=Number in URL.");
+  } else {
+    const price = prices[food];
+    const total = price * qty;
+    document.getElementById('orderDetails').innerText = `${food.replace(/-/g," ")} x ${qty}`;
+    document.getElementById('totalAmount').innerText = total;
+
+    const userOrder = {
+      food: food.replace(/-/g," "),
+      qty: qty,
+      total: total,
+      completed: false
+    };
+
+    // ✅ If email exists, use it as key; else use push() for auto-key
+    if (email) {
+      const key = email.replace(/\./g, "_");
+      set(ref(database, 'orders/' + key), userOrder)
+        .then(() => console.log("Order sent to Firebase with email key!"))
+        .catch(err => console.error("Firebase Error:", err));
+    } else {
+      push(ref(database, 'orders'), userOrder)
+        .then(() => console.log("Order sent to Firebase with auto key!"))
+        .catch(err => console.error("Firebase Error:", err));
+    }
+  }
+
+  import { runTransaction } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-database.js";
+
+const queueRef = ref(database, 'queueCounter');
+
+runTransaction(queueRef, (currentValue) => {
+    return (currentValue || 0) + 1; // increment counter, start from 1 if null
+})
+.then((result) => {
+    const queueNumber = result.snapshot.val(); // this is the new queue number
+    console.log("Queue Number:", queueNumber);
+
+    // Show queue number to student
+    const queueDisplay = document.createElement('p');
+    queueDisplay.innerText = `Your queue number is: ${queueNumber}`;
+    document.querySelector('.card').appendChild(queueDisplay);
+
+    // Save order with queue number
+    userOrder.queue = queueNumber;
+
+    if (email) {
+        const key = email.replace(/\./g, "_");
+        set(ref(database, 'orders/' + key), userOrder)
+            .then(() => console.log("Order sent with queue number!"))
+            .catch(err => console.error(err));
+    } else {
+        push(ref(database, 'orders'), userOrder)
+            .then(() => console.log("Order sent with queue number!"))
+            .catch(err => console.error(err));
+    }
+
+})
+.catch(err => console.error("Transaction Error:", err));
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Canteen Staff Login</title>
+<style>
+/* Background Gradient Animation */
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  margin:0;
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background: linear-gradient(120deg,#f4f7f9,#e0f7fa);
+  background-size: 400% 400%;
+  animation: gradientBG 15s ease infinite;
+}
+
+@keyframes gradientBG {
+  0%{background-position:0% 50%;}
+  50%{background-position:100% 50%;}
+  100%{background-position:0% 50%;}
+}
+
+/* Login Card */
+.card {
+  background:white;
+  width:350px;
+  padding:40px 30px;
+  border-radius:20px;
+  box-shadow:0 15px 25px rgba(0,0,0,0.2);
+  text-align:center;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow:0 20px 35px rgba(0,0,0,0.3);
+}
+
+h2 {
+  margin-bottom:30px;
+  color:#2c3e50;
+  font-size:26px;
+}
+
+/* Floating Input Fields */
+.input-group {
+  position: relative;
+  margin-bottom: 25px;
+}
+
+input {
+  width:100%;
+  padding:12px 10px;
+  border:1px solid #ccc;
+  border-radius:8px;
+  font-size:16px;
+  outline:none;
+  background:none;
+}
+
+label {
+  position:absolute;
+  top:12px;
+  left:12px;
+  color:#999;
+  pointer-events:none;
+  transition:0.3s;
+  font-size:16px;
+}
+
+input:focus + label,
+input:not(:placeholder-shown) + label {
+  top:-10px;
+  left:10px;
+  font-size:13px;
+  color:#ff4081;
+  background:white;
+  padding:0 5px;
+}
+
+button {
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:10px;
+  background:#ff4081;
+  color:white;
+  font-size:16px;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+button:hover {
+  background:#e73370;
+  transform: scale(1.05);
+}
+
+#errorMsg {
+  color:red;
+  margin-top:10px;
+  font-weight:bold;
+  font-size:14px;
+}
+
+/* Responsive */
+@media(max-width:400px){
+  .card{
+    width:90%;
+    padding:30px 20px;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="card">
+  <h2>Staff Login</h2>
+
+  <div class="input-group">
+    <input type="text" id="username" placeholder=" " required>
+    <label>Username</label>
+  </div>
+
+  <div class="input-group">
+    <input type="password" id="password" placeholder=" " required>
+    <label>Password</label>
+  </div>
+
+  <button onclick="login()">Login</button>
+  <p id="errorMsg"></p>
+</div>
+
+<script>
+function login() {
+  // Predefined credentials
+  const validUsername = "REC";
+  const validPassword = "canteen@123";
+
+  const username = document.getElementById('username').value.trim();
+  const password = document.getElementById('password').value.trim();
+
+  if(username === validUsername && password === validPassword){
+    window.location.href = "orders.html";
+  } else {
+    document.getElementById('errorMsg').innerText = "❌ Invalid username or password!";
+  }
+}
+</script>
+
+</body>
+</html>

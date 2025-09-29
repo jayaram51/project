@@ -1,0 +1,194 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Canteen Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #f4f7f9;
+      color: #333;
+    }
+
+    header {
+      background: #2c3e50;
+      color: white;
+      padding: 15px;
+      text-align: center;
+    }
+
+    h1 {
+      margin: 0;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 900px;
+      margin: 30px auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .menu {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+    }
+
+    .item {
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 15px;
+      text-align: center;
+      background: #fafafa;
+      transition: transform 0.2s;
+    }
+
+    .item:hover {
+      transform: scale(1.05);
+      background: #f1f1f1;
+    }
+
+    .item img {
+      max-width: 100%;
+      border-radius: 8px;
+    }
+
+    form {
+      margin-top: 30px;
+    }
+
+    label {
+      display: block;
+      margin: 10px 0 5px;
+      font-weight: bold;
+    }
+
+    input, select, a ,adj{
+    
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+/* Remove full width for anchor */
+a {
+  display: inline-block;   /* shrink to fit */
+  padding: 4px;
+  text-decoration: none;
+  background: #2c3e50;
+  color: white;
+  font-weight: lighter;
+  cursor: pointer;
+  border: none;
+  border-radius: 5px;
+  transition: background 0.3s;
+}
+
+a:hover {
+  background: blueviolet;
+}
+
+/* Center container */
+.form-actions {
+  text-align: center;
+  margin-top: 15px;
+}
+
+
+
+    footer {
+      text-align: center;
+      padding: 15px;
+      background: #2c3e50;
+      color: white;
+      margin-top: 30px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>🍴 Smart Canteen Dashboard</h1>
+    <p>Pre-book your meal & skip the queue!</p>
+  </header>
+
+  <div class="container">
+    <h2>📋 Menu</h2>
+    <div class="menu">
+      <div class="item">
+        <img src="vegetable-noodles.jpg" alt="Veg Noodles">
+        <h3>Veg Noodles</h3>
+        <p>₹50</p>
+      </div>
+      <div class="item">
+        <img src="veg-fried-rice.jpg" alt="Veg Fried rice">
+        <h3>Veg Fried rice</h3>
+        <p>₹60</p>
+      </div>
+      <div class="item">
+        <img src="chow-mein-Asian-noodles-12.webp" alt="Chicken Noodles">
+        <h3>Chicken Noodles</h3>
+        <p>₹70</p>
+      </div>
+      <div class="item">
+        <img src="chicken-fried-rice7.webp" alt="Chicken Fried Rice">
+        <h3>Chicken Fried Rice</h3>
+        <p>₹100</p>
+      </div>
+    </div>
+
+    <h2>🛒 Place Your Order</h2>
+    <form id="orderForm">
+      <label for="food">Select Food Item:</label>
+      <select id="food" required>
+        <option value="">--Choose an item--</option>
+        <option value="Veg-noodles">Veg Noodles - ₹50</option>
+        <option value="Chicken-noodles">Chicken Noodles - ₹70</option>
+        <option value="Veg-fried-rice">Veg Fried Rice - ₹60</option>
+        <option value="Chicken-fried-rice">Chicken Fried Rice - ₹75</option>
+      </select>
+
+      <label for="qty">Quantity:</label>
+      <input type="number" id="qty" min="1" value="1" required>
+
+      <label for="payment">Payment Method:</label>
+      <select id="payment" required>
+        <option value="Online">Online</option>
+      </select>
+<div class="form-actions">
+  <a href="#" onclick="submitOrder()">Submit Order</a>
+</div>
+    </form>
+  </div>
+
+  <footer>
+    <p>© 2025 Smart Canteen | Built for College Project</p>
+  </footer>
+
+
+<script>
+function submitOrder() {
+  const food = document.getElementById('food').value;
+  const qty = parseInt(document.getElementById('qty').value);
+
+  if (!food || qty < 1) {
+    alert("Please select item and quantity");
+    return;
+  }
+
+  // Pass data via URL query
+  window.location.href = `payment.html?food=${food}&qty=${qty}`;
+}
+</script>
+
+</body>
+</html>
+```

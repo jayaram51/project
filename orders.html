@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Verification - Smart Canteen</title>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f6fa; margin: 0; padding: 20px; }
+    h2 { text-align: center; color: #2f3640; margin-bottom: 20px; }
+    #clearOrders { display:block; width:200px; margin:0 auto 30px auto; padding:10px; border:none; border-radius:8px; font-size:16px; cursor:pointer; background:#e84118; color:white; font-weight:bold; }
+    #orders { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+    .order-card { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); transition: transform 0.2s; }
+    .order-card:hover { transform: translateY(-5px); }
+    .order-card p { margin: 8px 0; font-size: 16px; color: #2f3640; }
+    .status { font-weight: bold; padding: 4px 10px; border-radius: 20px; font-size: 14px; display: inline-block; margin-top: 5px; }
+    .pending { background: #fbc531; color: #2f3640; }
+    .verified { background: #4cd137; color: white; }
+    button.verify-btn { display: block; width: 100%; margin-top: 15px; padding: 10px; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; font-weight: bold; background: #0984e3; color: white; transition: transform 0.2s; }
+    button.verify-btn:disabled { background: #dcdde1; cursor: not-allowed; color: #7f8fa6; }
+    button.verify-btn:hover:not(:disabled) { transform: translateY(-2px); }
+  </style>
+</head>
+<body>
+  <h2>Pending Orders</h2>
+  <button id="clearOrders">Clear All Orders</button>
+  <div id="orders"></div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-app.js";
+    import { getDatabase, ref, onValue, update, push, remove } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCeLj-v5Coav6llAeDP30bKn4-k-OzpcQM",
+      authDomain: "loginpage-536d9.firebaseapp.com",
+      projectId: "loginpage-536d9",
+      storageBucket: "loginpage-536d9.appspot.com",
+      messagingSenderId: "445956902411",
+      appId: "1:445956902411:web:b4d31d65a212f3fc46c10e",
+      measurementId: "G-2QELSP6EJ0",
+      databaseURL: "https://loginpage-536d9-default-rtdb.firebaseio.com/"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const ordersDiv = document.getElementById("orders");
+    const ordersRef = ref(db, "orders");
+    const clearBtn = document.getElementById("clearOrders");
+
+    // Listen for orders and display
+    onValue(ordersRef, (snapshot) => {
+      ordersDiv.innerHTML = "";
+      if (!snapshot.exists()) {
+        ordersDiv.innerHTML = "<p style='text-align:center; color:#636e72;'>No orders found.</p>";
+        return;
+      }
+
+      snapshot.forEach(child => {
+        const order = child.val();
+        const key = child.key;
+        const isCompleted = order.completed === true;
+
+        const div = document.createElement("div");
+        div.className = "order-card";
+        div.innerHTML = `
+          <p><b>Food:</b> ${order.food}</p>
+          <p><b>Quantity:</b> ${order.qty}</p>
+          <p><b>Total:</b> ₹${order.total}</p>
+          <span class="status ${isCompleted ? 'verified' : 'pending'}">${isCompleted ? 'Verified ✅' : 'Pending ❌'}</span>
+        `;
+
+        const btn = document.createElement("button");
+        btn.className = "verify-btn";
+        btn.innerText = isCompleted ? "Verified ✅" : "Verify Payment";
+        btn.disabled = isCompleted;
+
+        btn.onclick = () => {
+          // Mark order as completed
+          update(ref(db, "orders/" + key), { completed: true });
+          // Push order to finalOrders
+          push(ref(db, "finalOrders"), {
+            food: order.food,
+            quantity: order.qty,
+            cost: order.total
+          }).then(() => {
+            alert("Order verified and sent to final page!");
+            window.location.href = "finalpage.html";
+          });
+        };
+
+        div.appendChild(btn);
+        ordersDiv.appendChild(div);
+      });
+    }, (error) => {
+      console.error("The read failed:", error);
+      ordersDiv.innerHTML = "<p style='color:red; text-align:center;'>Failed to load orders.</p>";
+    });
+
+    // Clear all orders button
+    clearBtn.onclick = () => {
+      if (confirm("Are you sure you want to clear all orders? This cannot be undone.")) {
+        remove(ordersRef)
+          .then(() => {
+            alert("All orders cleared!");
+            ordersDiv.innerHTML = "<p style='text-align:center; color:#636e72;'>No orders found.</p>";
+          })
+          .catch((error) => {
+            console.error("Error clearing orders:", error);
+            alert("Failed to clear orders.");
+          });
+      }
+    };
+  </script>
+</body>
+</html>
